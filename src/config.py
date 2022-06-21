@@ -1,6 +1,7 @@
 from typing import Optional
 import tweepy as tw
 from decouple import config
+from pydantic import BaseSettings
 
 def connect_to_twitter() -> Optional[tw.API]:
     config_info = {
@@ -18,3 +19,17 @@ def connect_to_twitter() -> Optional[tw.API]:
     except Exception as e:
         raise e
     return api
+
+
+class Settings(BaseSettings):
+    database_hostname: str
+    database_port: str
+    database_password: str
+    database_username: str
+    database_name: str
+
+    class Config:
+        env_file = ".env"
+    
+
+settings = Settings()
