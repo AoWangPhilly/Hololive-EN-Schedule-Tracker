@@ -10,7 +10,13 @@ class IdolListener(tw.StreamingClient):
 
     def on_data(self, raw_data):
         tweet_data = loads(raw_data)
-        if not tweet_data["data"].get("referenced_tweets"):
+
+        if tweet_data.get("data", None) is None:
+            print("WEIRD THING HAPPENED")
+            print("-" * 100)
+            print(tweet_data)
+
+        elif not tweet_data["data"].get("referenced_tweets"):
             pprint(tweet_data)
             print()
             
