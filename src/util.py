@@ -7,8 +7,17 @@ from typing import Any
 from typing import Optional
 import tweepy as tw
 from decouple import config
-from database import get_db, engine
+from database import get_db
 import models
+import logging
+
+logging.basicConfig(
+    filename="std.log",
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    filemode="w",
+)
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 
 
 def connect_to_twitter() -> Optional[tw.API]:
@@ -42,31 +51,30 @@ def clean_data(dirty_json: dict[str, Any]) -> dict[str, Any]:
     data = dirty_json.get("data")
     includes = dirty_json.get("includes")
 
-    if data is None:
-        print("Bad connection?? Missing data key!")
-        print("-" * 150)
-        print(dirty_json)
-    else:
+    if data is not None:
         cleaned_dict["author_id"] = data["author_id"]
         cleaned_dict["created_at"] = data["created_at"]
         cleaned_dict["twitter_post_id"] = data["id"]
         cleaned_dict["text"] = data["text"]
 
-        if includes is None:
-            print("Missing includes Key!!")
-            print("-" * 150)
-            print(dirty_json)
-        else:
-            media = includes.get("media")
-            if media is not None:
-                cleaned_dict["image_path"] = includes["media"][0]["preview_image_url"]
+        entities = data.get("entities")
+        if entities is not None:
+            if "urls" in entities:
+                urls = entities["urls"][0]
+                if "unwound_url" in urls and urls["unwound_url"].startswith(
+                    "https://www.youtube.com"
+                ):
+                    cleaned_dict["youtube_link"] = urls["unwound_url"]
 
-            for user in includes["users"]:
-                if user["id"] == cleaned_dict["author_id"]:
-                    cleaned_dict["username"] = user["username"]
-                    cleaned_dict["name"] = user["name"]
-                    break
+                    thumbnail_picture = extract_thumbnail_link_from_youtube_link(
+                        cleaned_dict["youtube_link"]
+                    )
+                    cleaned_dict["image_path"] = thumbnail_picture
 
+    if includes is not None:
+        media = includes.get("media")
+        if media is not None:
+            cleaned_dict["image_path"] = includes["media"][0]["preview_image_url"]
     return cleaned_dict
 
 
@@ -96,3 +104,21 @@ def store_all_idol_info_to_db() -> None:
         db.commit()
         db.refresh(idol)
         print(idol)
+
+
+def extract_thumbnail_link_from_youtube_link(youtube_link: str) -> str:
+    start_index = youtube_link.find("=") + 1
+    end_index = youtube_link.find("&")
+    video_id = youtube_link[start_index:end_index]
+    return f"https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg"
+
+
+def store_twitter_post(data):
+    db_gen = get_db()
+    db = next(db_gen)
+    data = clean_data(data)
+    new_post = models.TwitterPost(**data)
+
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
