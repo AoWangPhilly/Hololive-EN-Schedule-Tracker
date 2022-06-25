@@ -3,12 +3,13 @@ import tweepy as tw
 from decouple import config
 from pydantic import BaseSettings
 
+
 def connect_to_twitter() -> Optional[tw.API]:
     config_info = {
         "consumer_key": config("CONSUMER_KEY"),
         "consumer_secret": config("CONSUMER_SECRET"),
         "access_token": config("ACCESS_TOKEN"),
-        "access_token_secret": config("ACCESS_TOKEN_SECRET")
+        "access_token_secret": config("ACCESS_TOKEN_SECRET"),
     }
     auth = tw.OAuthHandler(**config_info)
 
@@ -30,6 +31,6 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
-    
+
 
 settings = Settings()

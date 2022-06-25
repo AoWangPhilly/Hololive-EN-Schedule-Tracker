@@ -5,6 +5,7 @@ from database import Base
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.sql.expression import null
 
+
 class Idol(Base):
     __tablename__ = "idols"
     __table_args__ = (UniqueConstraint("author_id"),)
@@ -15,16 +16,20 @@ class Idol(Base):
     name = Column(String, nullable=False)
     icon_path = Column(String, nullable=False)
 
+
 class TwitterPost(Base):
     __tablename__ = "twitter_posts"
 
     id = Column(Integer, primary_key=True, nullable=False)
     twitter_post_id = Column(Integer, primary_key=True, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False)
-    twitter_text = Column(String, nullable=False)
-    image_path = Column(String, nullable=False)
-    youtube_link = Column(String, nullable=False)
+    text = Column(String, nullable=False)
+    image_path = Column(String)
+    youtube_link = Column(String)
 
-    author_id = Column(Integer, ForeignKey(column="idols.author_id", ondelete="CASCADE"), nullable=False)
+    author_id = Column(
+        Integer,
+        ForeignKey(column="idols.author_id", ondelete="CASCADE"),
+        nullable=False,
+    )
     author = relationship("Idol")
-

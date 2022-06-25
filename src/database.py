@@ -15,6 +15,7 @@ print(f"{database_exists(engine.url)=}")
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
+
 def get_db():
     db = SessionLocal()
 
@@ -22,4 +23,3 @@ def get_db():
         yield db
     finally:
         db.close()
-        
