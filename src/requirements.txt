@@ -1,0 +1,5 @@
+pydantic==1.9.1
+python-decouple==3.6
+SQLAlchemy==1.4.37
+SQLAlchemy_Utils==0.38.2
+tweepy==4.10.0
