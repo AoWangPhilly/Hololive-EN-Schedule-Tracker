@@ -19,16 +19,17 @@ class Idol(Base):
 
 class TwitterPost(Base):
     __tablename__ = "twitter_posts"
+    __table_args__ = (UniqueConstraint("twitter_post_id"),)
 
     id = Column(Integer, primary_key=True, nullable=False)
-    twitter_post_id = Column(BigInteger, primary_key=True, nullable=False)
+    twitter_post_id = Column(BigInteger, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False)
     text = Column(String, nullable=False)
     image_path = Column(String)
     youtube_link = Column(String)
 
     author_id = Column(
-        Integer,
+        BigInteger,
         ForeignKey(column="idols.author_id", ondelete="CASCADE"),
         nullable=False,
     )
