@@ -9,11 +9,12 @@ def extract_thumbnail_link_from_youtube_link(youtube_link: str) -> str:
     return f"https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg"
 
 
-class StreamingClientCleaner:
+class ResponseFormatter:
     @staticmethod
     def reformat_response(response: tw.StreamResponse) -> dict[str, Any]:
         output = {}
         data, includes, _, _ = response
+        print(response)
         output["author_id"] = data.author_id
         output["created_at"] = data.created_at
         output["twitter_post_id"] = data.id
@@ -21,7 +22,8 @@ class StreamingClientCleaner:
 
         if (
             data.entities
-            and (url := data.entities["urls"][0]["expanded_url"])
+            and (urls := data.entities.get("urls"))
+            and (url := urls[0]["expanded_url"])
             and url.startswith("https://youtu.be")
         ):
             output["youtube_link"] = url
