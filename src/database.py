@@ -7,6 +7,7 @@ from constants import SQLALCHEMY_DB_URL
 engine = create_engine(SQLALCHEMY_DB_URL)
 
 if not database_exists(engine.url):
+    print(f"{engine.url} is created! :)")
     create_database(engine.url)
 
 print(f"{database_exists(engine.url)=}")
