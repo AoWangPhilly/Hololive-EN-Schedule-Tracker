@@ -3,13 +3,12 @@ from constants import (
     HOLOLIVE_EN_MYTH_TAGS,
     HOLOLIVE_EN_VSINGER_TAGS,
 )
-from typing import Any
-from typing import Optional
+from typing import Any, Optional
 import tweepy as tw
 from decouple import config
 from database import get_db
 import models
-
+from StreamingClientCleaner import StreamingClientCleaner
 import logging
 
 logging.basicConfig(
@@ -47,40 +46,6 @@ def generate_holo_en_rule() -> str:
     return " OR ".join(hololive_tag)
 
 
-def clean_data(dirty_json: dict[str, Any]) -> dict[str, Any]:
-    cleaned_dict = {}
-    data = dirty_json.get("data")
-    includes = dirty_json.get("includes")
-    entities = data.get("entities")
-
-    cleaned_dict["author_id"] = data["author_id"]
-    cleaned_dict["created_at"] = data["created_at"]
-    cleaned_dict["twitter_post_id"] = data["id"]
-    cleaned_dict["text"] = data["text"]
-
-    if entities is not None and "urls" in entities:
-        urls = entities["urls"][0]
-        if "unwound_url" in urls and urls["unwound_url"].startswith(
-            "https://www.youtube.com"
-        ):
-            cleaned_dict["youtube_link"] = urls["unwound_url"]
-
-            thumbnail_picture = extract_thumbnail_link_from_youtube_link(
-                cleaned_dict["youtube_link"]
-            )
-            cleaned_dict["image_path"] = thumbnail_picture
-
-    if includes is not None:
-        media = includes.get("media")
-        if media is not None:
-            content = includes["media"][0]
-            if "url" in content:
-                cleaned_dict["image_path"] = content["url"]
-            elif "preview_image_url" in content:
-                cleaned_dict["image_path"] = content["preview_image_url"]
-    return cleaned_dict
-
-
 def get_idol_info(screen_name: str) -> dict:
     api = connect_to_twitter()
     user = api.get_user(screen_name=screen_name)
@@ -109,21 +74,11 @@ def store_all_idol_info_to_db() -> None:
         print(idol)
 
 
-def extract_thumbnail_link_from_youtube_link(youtube_link: str) -> str:
-    start_index = youtube_link.find("=") + 1
-    end_index = youtube_link.find("&")
-    if end_index != -1:
-        video_id = youtube_link[start_index:end_index]
-    else:
-        video_id = youtube_link[start_index:]
-    return f"https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg"
-
-
 def store_twitter_post(data: dict[str, Any]) -> None:
     db_gen = get_db()
     db = next(db_gen)
     try:
-        data = clean_data(data)
+        data = StreamingClientCleaner.clean_data(data)
         new_post = models.TwitterPost(**data)
 
         db.add(new_post)
