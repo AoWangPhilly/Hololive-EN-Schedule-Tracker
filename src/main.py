@@ -1,6 +1,6 @@
 from database import engine
 import models
-from util import generate_holo_en_rule
+from Idol import generate_holo_en_rule
 from decouple import config
 from IdolListener import IdolListener
 import tweepy as tw
