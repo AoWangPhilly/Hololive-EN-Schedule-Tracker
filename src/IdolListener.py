@@ -1,6 +1,7 @@
 import tweepy as tw
 from json import loads
 from util import store_twitter_post
+from pprint import pprint
 
 
 class IdolListener(tw.StreamingClient):
@@ -16,4 +17,5 @@ class IdolListener(tw.StreamingClient):
             print(tweet_data)
 
         elif not tweet_data["data"].get("referenced_tweets"):
+            pprint(tweet_data)
             store_twitter_post(tweet_data)
