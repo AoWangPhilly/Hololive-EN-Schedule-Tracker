@@ -3,8 +3,9 @@ import tweepy as tw
 from decouple import config
 from database import get_db
 import models
-from StreamingClientCleaner import StreamingClientCleaner
 import logging
+
+from ResponseFormatter import ResponseFormatter
 
 logging.basicConfig(
     filename="std.log",
@@ -41,7 +42,7 @@ def store_twitter_post(data: dict[str, Any]) -> None:
     db_gen = get_db()
     db = next(db_gen)
     try:
-        data = StreamingClientCleaner.reformat_response(data)
+        data = ResponseFormatter.reformat_response(data)
         new_post = models.TwitterPost(**data)
 
         db.add(new_post)
