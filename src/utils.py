@@ -15,7 +15,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
 
-def connect_to_twitter() -> Optional[tw.API]:
+def connect_to_twitter_api() -> Optional[tw.API]:
     config_info = {
         "consumer_key": config("CONSUMER_KEY"),
         "consumer_secret": config("CONSUMER_SECRET"),
@@ -33,11 +33,15 @@ def connect_to_twitter() -> Optional[tw.API]:
     return api
 
 
+def connect_to_twitter_client() -> Optional[tw.Client]:
+    return tw.Client(bearer_token=config("BEARER_TOKEN"))
+
+
 def store_twitter_post(data: dict[str, Any]) -> None:
     db_gen = get_db()
     db = next(db_gen)
     try:
-        data = StreamingClientCleaner.clean_data(data)
+        data = StreamingClientCleaner.reformat_response(data)
         new_post = models.TwitterPost(**data)
 
         db.add(new_post)
