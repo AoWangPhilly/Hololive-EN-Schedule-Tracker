@@ -1,3 +1,5 @@
+"""SQLAlchemy data models that represent a SQL table in the Hololive db, where the attributes of a model translate to columns in a table
+"""
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey, UniqueConstraint
 from sqlalchemy.sql.sqltypes import TIMESTAMP
