@@ -7,5 +7,5 @@ class IdolListener(tw.StreamingClient):
         print("Connected!")
 
     def on_response(self, response):
-        if not response.data.referenced_tweets:
+        if response.data and not response.data.referenced_tweets:
             store_twitter_post(response)
