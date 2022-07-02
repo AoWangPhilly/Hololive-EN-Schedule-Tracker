@@ -3,9 +3,10 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey, UniqueConstraint
 from sqlalchemy.sql.sqltypes import TIMESTAMP
-from database import Base
 from sqlalchemy import Column, Integer, String, BigInteger
 from sqlalchemy.sql.expression import null
+
+from src.database import Base
 
 
 class Idol(Base):
