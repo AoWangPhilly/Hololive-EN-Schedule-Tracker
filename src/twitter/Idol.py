@@ -16,7 +16,7 @@ from src.twitter.utils.util import (
     connect_to_twitter_client,
 )
 from src.database import get_db
-import src.models as models
+import src.twitter.models as models
 from src.twitter.ResponseFormatter import extract_thumbnail_link_from_youtube_link
 
 
