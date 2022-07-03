@@ -5,7 +5,7 @@ import tweepy as tw
 from decouple import config
 
 from ...database import get_db
-from ... import models
+from .. import models
 from src.twitter.ResponseFormatter import ResponseFormatter
 
 logging.basicConfig(
