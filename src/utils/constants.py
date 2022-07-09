@@ -1,4 +1,4 @@
-from src.config import settings
+from src.utils.config import settings
 
 SQLALCHEMY_DB_URL = f"postgresql://{settings.database_username}:{settings.database_password}@{settings.database_hostname}:{settings.database_port}/{settings.database_name}"
 
@@ -19,7 +19,6 @@ HOLOLIVE_EN_COUNCIL_TAGS = [
     "nanashimumei_en",
     "hakosbaelz",
 ]
-
 
 TWITTER_FIELDS = (
     "id,text,author_id,created_at,entities,referenced_tweets,public_metrics"
@@ -43,4 +42,5 @@ HOLOLIVE_EN_COUNCIL_YOUTUBE_ID = [
     "UCmbs8T6MWqUHP1tIQvSgKrg",  # Ouro Kronii
     "UCsUj0dszADCGbF3gNrQEuSQ",  # Tsukumo Sana
 ]
+
 HOLOLIVE_EN_VSINGER_YOUTUBE_ID = ["UC8rcEBzJSleTkf_-agPM20g"]  # IRyS

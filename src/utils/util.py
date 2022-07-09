@@ -1,20 +1,10 @@
 import logging
-from typing import Any, Optional
+from typing import Optional
 
 import tweepy as tw
 from decouple import config
 
-from ...database import get_db
-from .. import models
 from src.twitter.ResponseFormatter import ResponseFormatter
-
-logging.basicConfig(
-    filename="std.log",
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    filemode="w",
-)
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
 
 
 def connect_to_twitter_api() -> Optional[tw.API]:
@@ -37,18 +27,3 @@ def connect_to_twitter_api() -> Optional[tw.API]:
 
 def connect_to_twitter_client() -> Optional[tw.Client]:
     return tw.Client(bearer_token=config("BEARER_TOKEN"))
-
-
-def store_twitter_post(data: dict[str, Any]) -> None:
-    db_gen = get_db()
-    db = next(db_gen)
-    try:
-        data = ResponseFormatter.reformat_response(data)
-        new_post = models.TwitterPost(**data)
-
-        db.add(new_post)
-        db.commit()
-        db.refresh(new_post)
-        print("SUCCESS!! Now in the database :)")
-    except Exception as e:
-        logging.critical(f"Critical: {e}")
