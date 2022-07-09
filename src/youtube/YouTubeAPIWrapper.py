@@ -1,26 +1,16 @@
+from typing import Dict, List, Optional
 from dataclasses import dataclass
 from pprint import pprint
-from typing import Dict, List, Optional
-import requests
 import json
 
-from decouple import config
+import requests
 
 from src.database import get_db
-from src.youtube.models import YouTubeIdol, YouTubeStatistic
-
-
-from src.youtube.utils.constants import (
-    HOLOLIVE_EN_MYTH_YOUTUBE_ID,
-    HOLOLIVE_EN_COUNCIL_YOUTUBE_ID,
-    HOLOLIVE_EN_VSINGER_YOUTUBE_ID,
-)
-
-API_KEY = config("YOUTUBE_API_KEY")
+from src.models import YouTubeIdol, YouTubeStatistic
 
 
 @dataclass
-class YouTubeStats:
+class YouTubeAPIWrapper:
     api_key: str
     channel_ids: List[str]
     channel_statistics: Optional[Dict] = None
@@ -34,24 +24,27 @@ class YouTubeStats:
         json_url = requests.get(url)
         data = json.loads(json_url.text)
         output = []
+
         for idol in data["items"]:
             temp = {}
-            temp["youtube_id"] = idol["id"]
             snippet = idol["snippet"]
+
+            temp["youtube_id"] = idol["id"]
             temp["title"] = snippet["title"]
             temp["description"] = snippet["description"]
             temp["published_at"] = snippet["publishedAt"]
             temp["thumbnail"] = snippet["thumbnails"]["high"]["url"]
             output.append(temp)
+
         return output
 
     def save_idol_info_to_db(self):
         db_gen = get_db()
         db = next(db_gen)
 
-        idols_info = self.get_idol_info()
+        idol_infos = self.get_idol_info()
 
-        for idol_info in idols_info:
+        for idol_info in idol_infos:
             pprint(idol_info)
             new_idol = YouTubeIdol(**idol_info)
 
@@ -65,15 +58,17 @@ class YouTubeStats:
         json_url = requests.get(url)
         data = json.loads(json_url.text)
         output = []
-        pprint(data)
+
         for idol in data["items"]:
             temp = {}
-            temp["youtube_id"] = idol["id"]
             stats = idol["statistics"]
+
+            temp["youtube_id"] = idol["id"]
             temp["subscriber_count"] = stats["subscriberCount"]
             temp["video_count"] = stats["videoCount"]
             temp["view_count"] = stats["viewCount"]
             output.append(temp)
+
         return output
 
     def save_statistics_to_db(self):
@@ -88,15 +83,3 @@ class YouTubeStats:
             db.add(new_idol)
             db.commit()
             db.refresh(new_idol)
-
-
-def run():
-    yt_ids = (
-        HOLOLIVE_EN_MYTH_YOUTUBE_ID
-        + HOLOLIVE_EN_COUNCIL_YOUTUBE_ID
-        + HOLOLIVE_EN_VSINGER_YOUTUBE_ID
-    )
-    yt = YouTubeStats(api_key=API_KEY, channel_ids=yt_ids)
-    # yt.save_idol_info_to_db()
-
-    yt.save_statistics_to_db()
