@@ -9,7 +9,7 @@ import src.youtube.models as youtube_models
 if __name__ == "__main__":
     youtube_models.Base.metadata.create_all(engine)
 
-    schedule.every().day.at("17:00").do(run)
+    schedule.every().day.at("12:00").do(run)
 
     while True:
         schedule.run_pending()
