@@ -48,6 +48,33 @@ class Idol:
         }
 
     @staticmethod
+    def get_idol_metrics(screen_name: str) -> dict:
+        api = connect_to_twitter_api()
+        user = api.get_user(screen_name=screen_name)
+        return {
+            "author_id": user.id,
+            "followers_count": user.followers_count,
+            "friends_count": user.friends_count,
+            "tweets_count": user.statuses_count,
+        }
+
+    @staticmethod
+    def store_idol_metrics():
+        IDOLS = (
+            HOLOLIVE_EN_COUNCIL_TAGS + HOLOLIVE_EN_MYTH_TAGS + HOLOLIVE_EN_VSINGER_TAGS,
+        )[0]
+
+        db_gen = get_db()
+        db = next(db_gen)
+
+        for idol_screen_name in IDOLS:
+            idol_metric = Idol.get_idol_metrics(screen_name=idol_screen_name)
+            metric = models.TwitterMetric(**idol_metric)
+            db.add(metric)
+            db.commit()
+            db.refresh(metric)
+
+    @staticmethod
     def store_all_idol_info_to_db() -> None:
         IDOLS = (
             HOLOLIVE_EN_COUNCIL_TAGS + HOLOLIVE_EN_MYTH_TAGS + HOLOLIVE_EN_VSINGER_TAGS,

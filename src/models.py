@@ -40,6 +40,24 @@ class TwitterPost(Base):
     author = relationship("Idol")
 
 
+class TwitterMetric(Base):
+    __tablename__ = "twitter_metrics"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    followers_count = Column(Integer, nullable=False)
+    friends_count = Column(Integer, nullable=False)
+    tweets_count = Column(Integer, nullable=False)
+    recorded_at = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    author_id = Column(
+        BigInteger,
+        ForeignKey(column="idols.author_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    author = relationship("Idol")
+
+
 class YouTubeIdol(Base):
     __tablename__ = "youtube_idols"
     __table_args__ = (UniqueConstraint("youtube_id"),)
