@@ -10,8 +10,8 @@ import src.youtube.YouTubeRunner as YouTubeRunner
 
 
 def idol_metrics_process():
-    schedule.every().day.at("00:00").do(YouTubeRunner.run)
-    schedule.every().day.at("00:00").do(Idol.store_idol_metrics)
+    schedule.every().day.at("06:00").do(YouTubeRunner.run)
+    schedule.every().day.at("06:00").do(Idol.store_idol_metrics)
 
     while True:
         schedule.run_pending()
