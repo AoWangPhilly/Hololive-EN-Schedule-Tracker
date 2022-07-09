@@ -4,8 +4,6 @@ from typing import Optional
 import tweepy as tw
 from decouple import config
 
-from src.twitter.ResponseFormatter import ResponseFormatter
-
 
 def connect_to_twitter_api() -> Optional[tw.API]:
     config_info = {
