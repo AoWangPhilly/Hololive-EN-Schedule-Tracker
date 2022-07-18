@@ -1,6 +1,7 @@
-import schedule
 import time
 from multiprocessing import Process
+
+import schedule
 
 from src.database import engine
 import src.models as models
@@ -10,8 +11,8 @@ import src.youtube.YouTubeRunner as YouTubeRunner
 
 
 def idol_metrics_process():
-    schedule.every().day.at("06:00").do(YouTubeRunner.run)
-    schedule.every().day.at("06:00").do(Idol.store_idol_metrics)
+    schedule.every().day.at("12:00").do(YouTubeRunner.run)
+    schedule.every().day.at("12:00").do(Idol.store_idol_metrics)
 
     while True:
         schedule.run_pending()
@@ -20,7 +21,7 @@ def idol_metrics_process():
 
 def main():
     models.Base.metadata.create_all(engine)
-
+    # Idol.get_all_idols_historic_tweets()
     p1 = Process(target=idol_metrics_process)
     p2 = Process(target=IdolListener.run)
 
