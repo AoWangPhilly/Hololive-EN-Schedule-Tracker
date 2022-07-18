@@ -6,6 +6,7 @@ from src.utils.constants import (
     HOLOLIVE_EN_COUNCIL_TAGS,
     HOLOLIVE_EN_MYTH_TAGS,
     HOLOLIVE_EN_VSINGER_TAGS,
+    HOLOLIVE_EN_TEMPUS_TAGS,
     TWITTER_FIELDS,
     EXPANSIONS,
     MEDIA_FIELDS,
@@ -34,6 +35,13 @@ logging.basicConfig(
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
+IDOLS = (
+    HOLOLIVE_EN_COUNCIL_TAGS
+    + HOLOLIVE_EN_MYTH_TAGS
+    + HOLOLIVE_EN_VSINGER_TAGS
+    + HOLOLIVE_EN_TEMPUS_TAGS,
+)[0]
+
 
 class Idol:
     @staticmethod
@@ -60,10 +68,6 @@ class Idol:
 
     @staticmethod
     def store_idol_metrics():
-        IDOLS = (
-            HOLOLIVE_EN_COUNCIL_TAGS + HOLOLIVE_EN_MYTH_TAGS + HOLOLIVE_EN_VSINGER_TAGS,
-        )[0]
-
         db_gen = get_db()
         db = next(db_gen)
 
@@ -76,19 +80,22 @@ class Idol:
 
     @staticmethod
     def store_all_idol_info_to_db() -> None:
-        IDOLS = (
-            HOLOLIVE_EN_COUNCIL_TAGS + HOLOLIVE_EN_MYTH_TAGS + HOLOLIVE_EN_VSINGER_TAGS,
-        )[0]
-
         db_gen = get_db()
         db = next(db_gen)
         for idol_screen_name in IDOLS:
-            idol_info = Idol.get_idol_info(idol_screen_name)
-            idol = models.Idol(**idol_info)
-            db.add(idol)
-            db.commit()
-            db.refresh(idol)
-            print(idol)
+            idol_query = (
+                db.query(models.Idol)
+                .filter(models.Idol.username == idol_screen_name)
+                .first()
+            )
+
+            if not idol_query:
+                idol_info = Idol.get_idol_info(idol_screen_name)
+                idol = models.Idol(**idol_info)
+                db.add(idol)
+                db.commit()
+                db.refresh(idol)
+                print(f"{idol_screen_name} added to Idol database!")
 
     @staticmethod
     def generate_holo_en_rule() -> str:
@@ -176,8 +183,6 @@ class Idol:
 
     @staticmethod
     def get_all_idols_historic_tweets():
-        usernames = (
-            HOLOLIVE_EN_MYTH_TAGS + HOLOLIVE_EN_VSINGER_TAGS + HOLOLIVE_EN_COUNCIL_TAGS
-        )
-        for username in usernames:
+
+        for username in IDOLS:
             Idol.gather_historic_tweets(username=username)

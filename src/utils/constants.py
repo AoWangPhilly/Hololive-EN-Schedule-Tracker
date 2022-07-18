@@ -20,6 +20,8 @@ HOLOLIVE_EN_COUNCIL_TAGS = [
     "hakosbaelz",
 ]
 
+HOLOLIVE_EN_TEMPUS_TAGS = ["regisaltare", "magnidezmond", "axelsyrios", "noirvesper_en"]
+
 TWITTER_FIELDS = (
     "id,text,author_id,created_at,entities,referenced_tweets,public_metrics"
 )
@@ -44,3 +46,10 @@ HOLOLIVE_EN_COUNCIL_YOUTUBE_ID = [
 ]
 
 HOLOLIVE_EN_VSINGER_YOUTUBE_ID = ["UC8rcEBzJSleTkf_-agPM20g"]  # IRyS
+
+HOLOLIVE_EN_TEMPUS_ID = [
+    "UCyxtGMdWlURZ30WSnEjDOQw",  # Regis Altare
+    "UC7MMNHR-kf9EN1rXiesMTMw",  # Magni Dezmond
+    "UC2hx0xVkMoHGWijwr_lA01w",  # Axel Syrios
+    "UCDRWSO281bIHYVi-OV3iFYA",  # Noir Vesper
+]
